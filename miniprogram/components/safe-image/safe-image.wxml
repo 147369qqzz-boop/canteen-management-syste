@@ -1,0 +1,2 @@
+<image wx:if="{{localSrc}}" src="{{localSrc}}" mode="{{mode}}" class="img-class"/>
+<view wx:else class="img-placeholder img-class">🖼</view>

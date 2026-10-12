@@ -1,0 +1,68 @@
+<view class="container">
+  <view class="card recharge-card">
+    <!-- 顶部栏 -->
+    <view class="recharge-header">
+      <view class="date-row">
+        <picker mode="date" value="{{time}}" bindchange="onDateChange">
+          <view class="date-picker">{{time || '请选择日期'}}</view>
+        </picker>
+        <button class="query-btn" bindtap="search">查询</button>
+        <button class="query-btn reset" bindtap="reset">重置</button>
+      </view>
+      <view class="balance-row">
+        <text>当前余额：</text>
+        <text class="price balance-num">¥{{account}}</text>
+        <button class="recharge-btn" bindtap="showRecharge">发起充值</button>
+      </view>
+    </view>
+
+    <!-- 记录列表 -->
+    <view wx:if="{{tableData.length > 0}}">
+      <view wx:for="{{tableData}}" wx:key="id" class="record-item">
+        <view class="record-left">
+          <text class="record-type">{{item.type}}</text>
+          <text class="record-time">{{item.time}}</text>
+        </view>
+        <view class="price record-money">¥{{item.money}}</view>
+      </view>
+
+      <view wx:if="{{hasMore}}" class="loading-more" bindtap="loadMore">加载更多</view>
+      <view wx:else class="loading-more">— 没有更多了 —</view>
+    </view>
+
+    <view wx:else class="empty-tip">暂无充值记录</view>
+  </view>
+
+  <!-- 充值弹窗 -->
+  <view class="modal-mask" wx:if="{{showRechargeModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-title">用户充值</view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">充值金额</text>
+          <input class="form-input" type="digit" placeholder="请输入金额"
+                 value="{{rechargeForm.money}}" bindinput="onMoneyInput"/>
+        </view>
+        <view class="form-item">
+          <text class="form-label">支付方式</text>
+          <radio-group>
+            <label class="radio-label">
+              <radio value="微信支付" checked="{{rechargeForm.type === '微信支付'}}"
+                     bindchange="onPayTypeChange"/>
+              微信支付
+            </label>
+            <label class="radio-label">
+              <radio value="支付宝" checked="{{rechargeForm.type === '支付宝'}}"
+                     bindchange="onPayTypeChange"/>
+              支付宝
+            </label>
+          </radio-group>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="closeModal">取消</button>
+        <button class="modal-btn confirm" bindtap="submitRecharge">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

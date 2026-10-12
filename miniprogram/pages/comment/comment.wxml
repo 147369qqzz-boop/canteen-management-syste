@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-row">
+    <input class="search-input" placeholder="评价内容" value="{{content}}" bindinput="onContentInput"/>
+    <input class="search-input" placeholder="菜品名称" value="{{goodsName}}" bindinput="onGoodsNameInput"/>
+    <button class="search-btn" bindtap="search">查询</button>
+    <button class="reset-btn" bindtap="reset">重置</button>
+  </view>
+
+  <!-- 评价列表 -->
+  <view wx:if="{{tableData.length > 0}}">
+    <view wx:for="{{tableData}}" wx:key="id" class="card comment-item">
+      <view class="comment-row">
+        <image src="{{item.goodsImg}}" mode="aspectFill" class="comment-goods-img"/>
+        <view class="comment-info">
+          <view class="comment-goods-name" bindtap="goDetail" data-id="{{item.goodsId}}">{{item.goodsName}}</view>
+          <view class="comment-order-no">订单：{{item.orderNo}}</view>
+          <view class="comment-stars">
+            <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+                  class="star {{item.score >= item ? 'on' : ''}}">★</text>
+            <text class="score-text">{{item.score}}分</text>
+          </view>
+          <view class="comment-content">{{item.content}}</view>
+          <view class="comment-time">{{item.time}}</view>
+        </view>
+      </view>
+      <view class="comment-actions">
+        <button class="action-btn edit" bindtap="editComment" data-item="{{item}}">编辑</button>
+        <button class="action-btn del" bindtap="deleteComment" data-id="{{item.id}}">删除</button>
+      </view>
+    </view>
+
+    <view wx:if="{{hasMore}}" class="loading-more" bindtap="loadMore">加载更多</view>
+    <view wx:else class="loading-more">— 没有更多了 —</view>
+  </view>
+
+  <view wx:else class="empty-tip">暂无评价</view>
+
+  <!-- 编辑弹窗 -->
+  <view class="modal-mask" wx:if="{{showEditModal}}" bindtap="closeEditModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-title">编辑评价</view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">评分</text>
+          <view class="star-rating">
+            <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+                  class="star {{editForm.score >= item ? 'on' : ''}}"
+                  bindtap="setScore" data-score="{{item}}">★</text>
+          </view>
+        </view>
+        <view class="form-item">
+          <text class="form-label">内容</text>
+          <textarea placeholder="请输入评价内容" value="{{editForm.content}}"
+                    bindinput="onEditContentInput" class="form-textarea"/>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="closeEditModal">取消</button>
+        <button class="modal-btn confirm" bindtap="submitEdit">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

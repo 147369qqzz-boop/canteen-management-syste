@@ -1,0 +1,142 @@
+<view class="page">
+  <!-- 目标卡片 -->
+  <view class="card" wx:if="{{goal}}">
+    <view class="card-head">
+      <text class="card-title">饮食目标</text>
+      <text class="card-edit" bindtap="showGoal">编辑</text>
+    </view>
+    <view class="goal-row">
+      <text class="goal-tag {{goal.goalType === '减脂' ? 'tag-danger' : goal.goalType === '增肌' ? 'tag-success' : 'tag-info'}}">
+        {{goal.goalType || '保持'}}
+      </text>
+      <view class="goal-nums">
+        <view class="gnum"><text class="gn-val">{{goal.dailyCalories || 2000}}</text><text class="gn-unit">千卡/日</text></view>
+        <view class="gnum"><text class="gn-val">{{goal.dailyProtein || 60}}</text><text class="gn-unit">g蛋白</text></view>
+        <view class="gnum"><text class="gn-val">{{goal.dailyCarbs || 250}}</text><text class="gn-unit">g碳水</text></view>
+        <view class="gnum"><text class="gn-val">{{goal.dailyFat || 65}}</text><text class="gn-unit">g脂肪</text></view>
+      </view>
+    </view>
+  </view>
+  <view class="card no-goal" wx:else bindtap="showGoal">
+    <text>未设置饮食目标，点击设置</text>
+  </view>
+
+  <!-- 今日摄入 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">今日摄入概览</text></view>
+    <view class="summary-grid">
+      <view class="s-item {{item.over ? 'over' : ''}}" wx:for="{{todaySummary}}" wx:key="label">
+        <view class="s-label">{{item.label}}</view>
+        <view class="s-val">{{item.current}} / {{item.target}}{{item.unit}}</view>
+        <progress percent="{{item.current > item.target ? 100 : item.current / item.target * 100}}"
+                  activeColor="{{item.over ? '#f56c6c' : '#67c23a'}}" stroke-width="6" border-radius="4" />
+        <text wx:if="{{item.over}}" class="s-warn">⚠ 已超标</text>
+      </view>
+    </view>
+    <!-- 建议 -->
+    <view wx:if="{{hasWarning}}" class="tips">
+      <text class="tips-title">健康建议</text>
+      <text>{{warningTips}}</text>
+    </view>
+  </view>
+
+  <!-- 饮食记录 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">饮食记录</text>
+      <text class="card-edit" bindtap="showRecord">添加</text>
+    </view>
+    <picker mode="selector" range="{{mealTypes}}" bindchange="onMealChange" value="{{mealIndex}}">
+      <view class="meal-picker">{{mealTypes[mealIndex]}} ▼</view>
+    </picker>
+
+    <view wx:if="{{records.length > 0}}">
+      <view class="rec-item" wx:for="{{records}}" wx:key="id">
+        <view class="rec-info">
+          <view class="rec-name">{{item.goodsName || '未知菜品'}}</view>
+          <view class="rec-meta">
+            <text>{{item.calories || 0}}千卡</text>
+            <text>蛋白{{item.protein || 0}}g</text>
+            <text>碳水{{item.carbs || 0}}g</text>
+          </view>
+          <view class="rec-time">{{item.recordTime}}</view>
+        </view>
+        <text class="rec-del" bindtap="deleteRecord" data-id="{{item.id}}">删除</text>
+      </view>
+    </view>
+    <view wx:else class="empty-row">暂无记录</view>
+  </view>
+
+  <!-- 近7天趋势 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">近7天摄入趋势</text></view>
+    <view class="chart-row">
+      <view class="bar-item" wx:for="{{weekDays}}" wx:key="*this">
+        <view class="bar-col">
+          <view class="bar-fill" style="height: {{weekCalories[index] > 0 ? weekCalories[index] / 30 : 0}}px; min-height: 2px;"></view>
+          <text class="bar-val">{{weekCalories[index]}}</text>
+        </view>
+        <text class="bar-label">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 目标编辑弹窗 -->
+  <view class="modal-mask" wx:if="{{showGoalModal}}" catchtap="closeGoal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-title">饮食目标设置</view>
+      <view class="form-row">
+        <text class="form-label">目标类型</text>
+        <picker mode="selector" range="{{['减脂', '增肌', '保持']}}" bindchange="onGoalType" value="{{goalGoalType === '减脂' ? 0 : goalGoalType === '增肌' ? 1 : 2}}">
+          <view class="picker-inline">{{goalGoalType}}</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="form-label">每日热量(千卡)</text>
+        <input class="form-input" type="digit" value="{{goalCalories}}" bindinput="onGoalInput" data-field="goalCalories" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">蛋白质(g)</text>
+        <input class="form-input" type="digit" value="{{goalProtein}}" bindinput="onGoalInput" data-field="goalProtein" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">碳水(g)</text>
+        <input class="form-input" type="digit" value="{{goalCarbs}}" bindinput="onGoalInput" data-field="goalCarbs" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">脂肪(g)</text>
+        <input class="form-input" type="digit" value="{{goalFat}}" bindinput="onGoalInput" data-field="goalFat" />
+      </view>
+      <view class="modal-btns">
+        <button class="btn-cancel" bindtap="closeGoal">取消</button>
+        <button class="btn-ok" bindtap="saveGoal">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加记录弹窗 -->
+  <view class="modal-mask" wx:if="{{showRecordModal}}" catchtap="closeRecord">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-title">添加饮食记录</view>
+      <view class="form-row">
+        <text class="form-label">菜品</text>
+        <picker mode="selector" range="{{goodsOptions}}" range-key="name" bindchange="onRecGoods">
+          <view class="picker-inline">{{recGoodsName || '请选择菜品'}}</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="form-label">餐次</text>
+        <picker mode="selector" range="{{mealTypes}}" bindchange="onRecMeal" value="{{recMealIndex}}">
+          <view class="picker-inline">{{mealTypes[recMealIndex]}}</view>
+        </picker>
+      </view>
+      <view wx:if="{{recGoodsId}}" class="rec-preview">
+        <text>{{recCalories}}千卡 | 蛋白{{recProtein}}g | 碳水{{recCarbs}}g | 脂肪{{recFat}}g</text>
+      </view>
+      <view class="modal-btns">
+        <button class="btn-cancel" bindtap="closeRecord">取消</button>
+        <button class="btn-ok" bindtap="addRecord">添加</button>
+      </view>
+    </view>
+  </view>
+</view>

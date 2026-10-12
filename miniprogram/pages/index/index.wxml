@@ -1,0 +1,132 @@
+<view class="page">
+  <!-- 顶部搜索栏 -->
+  <view class="header">
+    <view class="header-logo">🍱 校园食堂</view>
+    <view class="header-search" bindtap="goGoods">
+      <text class="search-icon">🔍</text>
+      <text class="search-text">搜索想吃的美食...</text>
+    </view>
+  </view>
+
+  <!-- 公告栏 -->
+  <view class="notice-bar" wx:if="{{noticeText}}">
+    <text class="notice-icon">📢</text>
+    <text class="notice-text">{{noticeText}}</text>
+  </view>
+
+  <!-- 分类图标 -->
+  <view class="category-grid">
+    <view wx:for="{{categories}}" wx:key="id" class="category-item"
+          bindtap="goCategory" data-id="{{item.id}}">
+      <view class="cate-icon">{{item.icon}}</view>
+      <text class="cate-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 轮播图 -->
+  <view class="carousel-wrap" wx:if="{{carouselList.length > 0}}">
+    <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#e05a3c"
+            autoplay interval="3500" duration="500" circular style="height:340rpx;border-radius:16rpx;">
+      <swiper-item wx:for="{{carouselList}}" wx:key="id">
+        <image src="{{item.img}}" mode="aspectFill" class="carousel-img"
+               bindtap="goDetail" data-id="{{item.goodsId}}"/>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 限时特惠 -->
+  <view class="section" wx:if="{{flashGoods.length > 0}}">
+    <view class="section-head">
+      <view class="section-title"><text>⚡</text>限时特惠</view>
+      <view class="countdown">
+        <text class="cd-item">{{countdown.h}}</text>:<text class="cd-item">{{countdown.m}}</text>:<text class="cd-item">{{countdown.s}}</text>
+      </view>
+      <text class="section-more" bindtap="goGoods">更多 ›</text>
+    </view>
+    <scroll-view scroll-x class="flash-scroll">
+      <view wx:for="{{flashGoods}}" wx:key="id" class="flash-card"
+            bindtap="goDetail" data-id="{{item.id}}">
+        <image src="{{item.img}}" mode="aspectFill" class="flash-img"/>
+        <view class="flash-info">
+          <view class="line1 flash-name">{{item.name}}</view>
+          <view class="flash-price">
+            <text class="price">¥{{item.price}}</text>
+            <text class="flash-original">¥{{item.originalPrice || item.price * 1.5}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 热销排行 -->
+  <view class="section" wx:if="{{hotGoods.length > 0}}">
+    <view class="section-head">
+      <view class="section-title"><text>🔥</text>热销排行</view>
+      <text class="section-more" bindtap="goGoods">查看完整榜单 ›</text>
+    </view>
+    <view class="rank-list">
+      <view wx:for="{{hotGoods}}" wx:key="id" class="rank-item"
+            bindtap="goDetail" data-id="{{item.id}}">
+        <view class="rank-num rank-{{index + 1}}">
+          <text wx:if="{{index === 0}}">🥇</text>
+          <text wx:elif="{{index === 1}}">🥈</text>
+          <text wx:elif="{{index === 2}}">🥉</text>
+          <text wx:else>{{index + 1}}</text>
+        </view>
+        <image src="{{item.img}}" mode="aspectFill" class="rank-img"/>
+        <view class="rank-info">
+          <view class="line1 rank-name">{{item.name}}</view>
+          <view class="rank-meta">月售{{item.saleCount}}份</view>
+        </view>
+        <view class="price rank-price">¥{{item.price}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 为您推荐 - 横向滚动 -->
+  <view class="section" wx:if="{{recommendGoods.length > 0}}">
+    <view class="section-head">
+      <view class="section-title"><text>💝</text>为您推荐</view>
+      <text class="section-more" bindtap="goGoods">换一批</text>
+    </view>
+    <scroll-view scroll-x class="recommend-scroll">
+      <view wx:for="{{recommendGoods}}" wx:key="id" class="recommend-card"
+            bindtap="goDetail" data-id="{{item.id}}">
+        <image src="{{item.img}}" mode="aspectFill" class="recommend-img"/>
+        <view class="recommend-tag" wx:if="{{item.recommend === '是'}}">推荐</view>
+        <view class="recommend-info">
+          <view class="line1 recommend-name">{{item.name}}</view>
+          <view class="recommend-desc line2">{{item.description || '美味可口，值得品尝'}}</view>
+          <view class="recommend-bottom">
+            <text class="price">¥{{item.price}}</text>
+            <text class="recommend-sale">已售{{item.saleCount}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 最新上架 -->
+  <view class="section" wx:if="{{newGoods.length > 0}}">
+    <view class="section-head">
+      <view class="section-title"><text>🆕</text>最新上架</view>
+      <text class="section-more" bindtap="goGoods">更多 ›</text>
+    </view>
+    <view class="waterfall">
+      <view wx:for="{{newGoods}}" wx:key="id" class="new-card"
+            bindtap="goDetail" data-id="{{item.id}}">
+        <image src="{{item.img}}" mode="aspectFill" class="new-img"/>
+        <view class="new-info">
+          <view class="line1 new-name">{{item.name}}</view>
+          <view class="new-bottom">
+            <text class="price">¥{{item.price}}</text>
+            <text class="new-tag">新品</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部占位 -->
+  <view style="height:30rpx;"></view>
+</view>

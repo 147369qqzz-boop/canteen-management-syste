@@ -1,0 +1,30 @@
+<view class="login-container">
+  <view class="login-box">
+    <view class="logo-area">
+      <text class="logo-icon">🍱</text>
+      <view class="welcome-text">校园食堂 · 美食每刻</view>
+      <view class="slogan">登录探索今日美味</view>
+    </view>
+
+    <view class="login-form">
+      <view class="form-item">
+        <input class="form-input" placeholder="请输入账号" value="{{form.username}}" bindinput="onInput" data-field="username"/>
+      </view>
+      <view class="form-item">
+        <input class="form-input" placeholder="请输入密码" password value="{{form.password}}" bindinput="onInput" data-field="password"/>
+      </view>
+      <view class="form-item">
+        <picker mode="selector" range="{{roles}}" value="{{roleIndex}}" bindchange="onRoleChange">
+          <view class="form-input picker-input">
+            {{roles[roleIndex]}}
+          </view>
+        </picker>
+      </view>
+      <button class="login-btn" bindtap="login" loading="{{loading}}" disabled="{{loading}}">
+        {{loading ? '登录中...' : '登 录'}}
+      </button>
+    </view>
+
+    <view class="register-link" bindtap="goRegister">还没有账号？立即注册</view>
+  </view>
+</view>

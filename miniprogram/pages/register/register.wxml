@@ -1,0 +1,16 @@
+<view class="login-container">
+  <view class="login-box">
+    <view class="title">欢 迎 注 册</view>
+    <view class="form-item">
+      <input class="form-input" placeholder="请输入账号" value="{{form.username}}" bindinput="onInput" data-field="username"/>
+    </view>
+    <view class="form-item">
+      <input class="form-input" placeholder="请输入密码" password value="{{form.password}}" bindinput="onInput" data-field="password"/>
+    </view>
+    <view class="form-item">
+      <input class="form-input" placeholder="请确认密码" password value="{{form.newPassword}}" bindinput="onInput" data-field="newPassword"/>
+    </view>
+    <button class="register-btn" bindtap="register">注 册</button>
+    <view class="login-link" bindtap="goLogin">已有账号？请登录</view>
+  </view>
+</view>

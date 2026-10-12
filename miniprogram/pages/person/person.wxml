@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="card person-card">
+    <view class="section-title">个人信息</view>
+
+    <!-- 头像 -->
+    <view class="form-item">
+      <text class="form-label">头像</text>
+      <image wx:if="{{user.avatar}}" src="{{user.avatar}}" class="avatar"
+             mode="aspectFill" bindtap="uploadAvatar"/>
+      <view wx:else class="avatar avatar-placeholder" bindtap="uploadAvatar">👤</view>
+      <text class="upload-hint">点击更换头像</text>
+    </view>
+
+    <!-- 账号 -->
+    <view class="form-item">
+      <text class="form-label">账号</text>
+      <input class="form-input" value="{{user.username}}" disabled placeholder="请输入账号"
+             bindinput="onInput" data-field="username"/>
+    </view>
+
+    <!-- 姓名 -->
+    <view class="form-item">
+      <text class="form-label">姓名</text>
+      <input class="form-input" value="{{user.name}}" placeholder="请输入姓名"
+             bindinput="onInput" data-field="name"/>
+    </view>
+
+    <!-- 余额 -->
+    <view class="form-item">
+      <text class="form-label">账户余额</text>
+      <view class="balance">¥{{user.account}}</view>
+    </view>
+
+    <button class="save-btn" bindtap="save">保存</button>
+  </view>
+</view>

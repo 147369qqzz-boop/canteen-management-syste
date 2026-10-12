@@ -1,0 +1,91 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-row">
+    <input class="search-input" placeholder="订单编号" value="{{orderNo}}" bindinput="onOrderNoInput"/>
+    <input class="search-input" placeholder="菜品名称" value="{{goodsName}}" bindinput="onGoodsNameInput"/>
+    <button class="search-btn" bindtap="search">查询</button>
+    <button class="reset-btn" bindtap="reset">重置</button>
+  </view>
+
+  <!-- 订单列表 -->
+  <view wx:if="{{tableData.length > 0}}">
+    <view wx:for="{{tableData}}" wx:key="id" class="card order-card">
+      <view class="order-header">
+        <text class="order-no">{{item.orderNo}}</text>
+        <text class="order-status status-{{item.statusClass}}">{{item.status}}</text>
+      </view>
+
+      <!-- 订单明细 -->
+      <view wx:for="{{item.orderDetailList}}" wx:key="id" wx:for-item="detail" class="order-detail">
+        <image src="{{detail.goodsImg}}" mode="aspectFill" class="detail-img"/>
+        <view class="detail-info">
+          <view class="line1 detail-name">{{detail.goodsName}}</view>
+          <view class="detail-row">
+            <text class="price">¥{{detail.goodsPrice}}</text>
+            <text>x{{detail.num}}</text>
+            <text class="price">小计：¥{{detail.subtotal}}</text>
+          </view>
+          <button wx:if="{{item.status === '已完成'}}" class="comment-btn" bindtap="addComment" data-item="{{detail}}" data-order-id="{{item.id}}">评价</button>
+        </view>
+      </view>
+
+      <view class="order-footer">
+        <view class="order-info">
+          <text>总价：<text class="price order-total">¥{{item.total}}</text></text>
+          <text class="order-meta">配送：{{item.deliverType}}</text>
+          <text class="order-meta">{{item.time}}</text>
+        </view>
+        <view wx:if="{{item.address}}" class="order-address">地址：{{item.address}}</view>
+        <view wx:if="{{item.deliver}}" class="order-deliver">配送信息：{{item.deliver}}</view>
+
+        <view class="order-actions">
+          <button wx:if="{{item.status === '待接单'}}" class="action-btn cancel" bindtap="cancelOrder" data-item="{{item}}">取消订单</button>
+          <button wx:if="{{item.status === '已出货' || item.status === '已配送'}}" class="action-btn confirm" bindtap="doneOrder" data-item="{{item}}">确认收货</button>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{hasMore}}" class="loading-more" bindtap="loadMore">
+      {{loading ? '加载中...' : '加载更多'}}
+    </view>
+    <view wx:else class="loading-more">— 没有更多了 —</view>
+  </view>
+
+  <view wx:else class="empty-tip">暂无订单</view>
+
+  <!-- 评价弹窗 -->
+  <view class="modal-mask" wx:if="{{showCommentModal}}" bindtap="closeCommentModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-title">写评价</view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">评分</text>
+          <view class="star-rating">
+            <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+                  class="star {{commentForm.score >= item ? 'on' : ''}}"
+                  bindtap="setScore" data-score="{{item}}">★</text>
+          </view>
+          <text class="score-hint">{{scoreHint}}</text>
+        </view>
+        <view class="form-item">
+          <text class="form-label">快捷标签</text>
+          <view class="tag-list">
+            <text wx:for="{{quickTags}}" wx:key="*this"
+                  class="tag {{commentForm.tags.indexOf(item) > -1 ? 'on' : ''}}"
+                  bindtap="toggleTag" data-tag="{{item}}">{{item}}</text>
+          </view>
+        </view>
+        <view class="form-item">
+          <text class="form-label">评价内容</text>
+          <textarea placeholder="分享你的用餐体验吧~" value="{{commentForm.content}}"
+                    bindinput="onCommentInput" class="form-textarea" maxlength="500"/>
+          <text class="char-count">{{commentForm.content.length || 0}}/500</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="closeCommentModal">取消</button>
+        <button class="modal-btn confirm" bindtap="submitComment">发表评价</button>
+      </view>
+    </view>
+  </view>
+</view>

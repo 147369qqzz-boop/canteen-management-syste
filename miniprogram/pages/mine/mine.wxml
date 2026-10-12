@@ -1,0 +1,88 @@
+<view class="page">
+  <!-- 用户头部 -->
+  <view class="profile-card">
+    <image wx:if="{{user.avatar}}" src="{{user.avatar}}" class="avatar" mode="aspectFill"/>
+    <view wx:else class="avatar avatar-place">👤</view>
+    <view class="profile-info">
+      <view class="profile-name">{{user.name || '未登录'}}</view>
+      <view class="profile-account">余额 <text class="price">¥{{user.account || '0.00'}}</text></view>
+    </view>
+    <view wx:if="{{!user.id}}" class="login-btn" bindtap="goLogin">登录</view>
+    <text wx:else class="edit-btn" bindtap="goPage" data-url="/pages/person/person">编辑</text>
+  </view>
+
+  <!-- 订单状态快捷入口 -->
+  <view class="card order-quick">
+    <view class="quick-head">
+      <text class="quick-title">我的订单</text>
+      <text class="quick-more" bindtap="goPage" data-url="/pages/orders/orders">全部 ›</text>
+    </view>
+    <view class="quick-tabs">
+      <view class="quick-tab" bindtap="goOrders" data-status="待接单">
+        <text class="tab-icon">📋</text>
+        <text class="tab-label">待接单</text>
+      </view>
+      <view class="quick-tab" bindtap="goOrders" data-status="已出货">
+        <text class="tab-icon">📦</text>
+        <text class="tab-label">已出货</text>
+      </view>
+      <view class="quick-tab" bindtap="goOrders" data-status="已配送">
+        <text class="tab-icon">🚀</text>
+        <text class="tab-label">配送中</text>
+      </view>
+      <view class="quick-tab" bindtap="goOrders" data-status="已完成">
+        <text class="tab-icon">✅</text>
+        <text class="tab-label">已完成</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常用功能 -->
+  <view class="card menu-group">
+    <view class="menu-item" bindtap="goPage" data-url="/pages/stalls/stalls">
+      <text class="menu-icon">🍳</text>
+      <text class="menu-label">档口浏览</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/queue/queue">
+      <text class="menu-icon">⏱</text>
+      <text class="menu-label">实时排队</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/diet/diet">
+      <text class="menu-icon">📊</text>
+      <text class="menu-label">饮食档案</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/cart/cart">
+      <text class="menu-icon">🛒</text>
+      <text class="menu-label">购物车</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/recharge/recharge">
+      <text class="menu-icon">💰</text>
+      <text class="menu-label">我的充值</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/collect/collect">
+      <text class="menu-icon">⭐</text>
+      <text class="menu-label">我的收藏</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/comment/comment">
+      <text class="menu-icon">💬</text>
+      <text class="menu-label">我的评价</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/password/password">
+      <text class="menu-icon">🔒</text>
+      <text class="menu-label">修改密码</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 退出 -->
+  <view class="logout-wrap" wx:if="{{user.id}}">
+    <button class="logout-btn" bindtap="logout">退出登录</button>
+  </view>
+</view>

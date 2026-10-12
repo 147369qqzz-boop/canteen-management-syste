@@ -1,0 +1,55 @@
+<view class="page">
+  <!-- 顶栏 -->
+  <view class="top-bar">
+    <view class="clock-row">
+      <text class="clock">{{now}}</text>
+      <text class="refresh-btn" bindtap="loadData">刷新</text>
+      <text class="auto-btn {{autoRefresh ? 'on' : ''}}" bindtap="toggleAuto">
+        {{autoRefresh ? '自动刷新开' : '自动刷新关'}}
+      </text>
+    </view>
+    <picker mode="selector" range="{{canteenList}}" range-key="name" bindchange="onCanteenChange" value="{{canteenIndex}}">
+      <view class="picker-box">{{canteenIndex >= 0 ? canteenList[canteenIndex].name : '全部食堂'}}</view>
+    </picker>
+  </view>
+
+  <!-- 排队卡片 -->
+  <view wx:if="{{!loading}}">
+    <view class="q-card {{item.operateStatus === '休息中' ? 'resting' : ''}}"
+          wx:for="{{stalls}}" wx:key="id">
+      <view class="q-head">
+        <text class="q-name">{{item.businessName}}</text>
+        <text class="q-tag {{item.operateStatus === '营业中' ? 'tag-on' : 'tag-off'}}">
+          {{item.operateStatus || '营业中'}}
+        </text>
+      </view>
+      <view wx:if="{{item.floor}}" class="q-floor">{{item.floor}}层</view>
+
+      <view class="q-stats">
+        <view class="q-stat">
+          <text class="q-num {{(item.queueCount || 0) > 10 ? 'danger' : ''}}">{{item.queueCount || 0}}</text>
+          <text class="q-label">排队(人)</text>
+        </view>
+        <view class="q-stat">
+          <text class="q-num">{{estimateWait(item)}}</text>
+          <text class="q-label">预计(分钟)</text>
+        </view>
+        <view class="q-stat">
+          <text class="q-num">{{item.estimatedCookingTime || 10}}</text>
+          <text class="q-label">出餐(分钟)</text>
+        </view>
+      </view>
+
+      <view class="q-bar-bg">
+        <view class="q-bar-fill {{barClass(item)}}" style="width: {{barWidth(item)}}%;"></view>
+      </view>
+      <text class="q-hint">{{queueHint(item)}}</text>
+    </view>
+
+    <view wx:if="{{stalls.length === 0}}" class="empty-tip">
+      <text>暂无营业档口</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-more">加载中...</view>
+</view>

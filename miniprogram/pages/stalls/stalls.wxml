@@ -1,0 +1,66 @@
+<view class="page">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <picker mode="selector" range="{{canteenList}}" range-key="name" bindchange="onCanteenChange" value="{{canteenIndex}}">
+      <view class="picker-box">{{canteenIndex >= 0 ? canteenList[canteenIndex].name : '全部食堂'}}</view>
+    </picker>
+    <picker mode="selector" range="{{floorList}}" bindchange="onFloorChange" value="{{floorIndex}}" wx:if="{{floorList.length > 0}}">
+      <view class="picker-box">{{floorIndex >= 0 ? floorList[floorIndex] + '层' : '全部楼层'}}</view>
+    </picker>
+    <view class="status-toggle" bindtap="toggleStatus">
+      <text class="{{filterStatus === 'all' ? 'active' : ''}}">全部</text>
+      <text class="{{filterStatus === '营业中' ? 'active' : ''}}">营业中</text>
+    </view>
+  </view>
+
+  <!-- 档口列表 -->
+  <view wx:if="{{!loading && stalls.length > 0}}">
+    <view class="stall-card" wx:for="{{stalls}}" wx:key="id">
+      <view class="stall-header">
+        <image wx:if="{{item.avatar}}" src="{{item.avatar}}" class="stall-avatar" mode="aspectFill" />
+        <view wx:else class="stall-avatar avatar-place"></view>
+        <view class="stall-info">
+          <view class="stall-name">
+            {{item.businessName}}
+            <text class="tag {{item.operateStatus === '营业中' ? 'tag-on' : 'tag-off'}}">
+              {{item.operateStatus || '营业中'}}
+            </text>
+          </view>
+          <view class="stall-addr">{{item.address}} | {{item.floor || '未设置'}}层</view>
+          <view class="stall-meta">
+            <text>出餐{{item.estimatedCookingTime || 10}}分钟</text>
+            <text>排队{{item.queueCount || 0}}人</text>
+            <text>预计{{estimateWait(item)}}分钟</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 菜品预览 -->
+      <view class="goods-row" wx:if="{{item.goodsList && item.goodsList.length > 0}}">
+        <view class="goods-mini" wx:for="{{item.goodsList}}" wx:for-item="g" wx:key="id" wx:if="{{index < 4}}"
+              bindtap="goGoodsDetail" data-id="{{g.id}}">
+          <image wx:if="{{g.img}}" src="{{g.img}}" mode="aspectFill" class="goods-img" />
+          <view wx:else class="goods-img no-img"></view>
+          <view class="goods-text">
+            <view class="g-name line1">{{g.name}}</view>
+            <view class="g-price">¥{{g.price}}</view>
+            <view class="g-nutr">{{g.calories || 0}}千卡 蛋白{{g.protein || 0}}g</view>
+            <view wx:if="{{g.avgScore}}" class="g-score">
+              <text class="star">★</text>{{g.avgScore}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="stall-footer">
+        <text class="btn-more" bindtap="goStallGoods" data-id="{{item.id}}">查看全部菜品 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!loading && stalls.length === 0}}" class="empty-tip">
+    <text>暂无营业档口</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-more">加载中...</view>
+</view>

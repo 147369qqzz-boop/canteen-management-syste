@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "safe-image": "/components/safe-image/safe-image"
+  },
+  "navigationBarTitleText": "我的评价"
+}

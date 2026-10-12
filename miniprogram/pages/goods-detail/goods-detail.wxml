@@ -1,0 +1,121 @@
+<scroll-view scroll-y class="page">
+  <!-- 菜品图片 -->
+  <view class="detail-img-wrap">
+    <image src="{{goods.img}}" mode="aspectFill" class="detail-img"/>
+    <view class="img-overlay" wx:if="{{goods.recommend === '是'}}">
+      <text class="rec-badge">🔥 主厨推荐</text>
+    </view>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="card info-card">
+    <view class="info-head">
+      <view class="info-name">{{goods.name}}</view>
+      <view class="collect-action {{userCollect.id ? 'active' : ''}}" bindtap="toggleCollect">
+        <text>{{userCollect.id ? '❤️ 已收藏' : '🤍 收藏'}}</text>
+      </view>
+    </view>
+    <view class="info-price-row">
+      <view class="price">¥<text class="price-big">{{goods.price}}</text></view>
+      <text class="info-meta">已售 {{goods.saleCount}} 份</text>
+      <text class="info-meta">库存 {{goods.store}}</text>
+    </view>
+    <view class="info-desc">{{goods.description || '暂无描述'}}</view>
+
+    <!-- 评分概要 -->
+    <view class="score-summary" wx:if="{{commentTotal > 0}}">
+      <view class="score-left">
+        <text class="score-num">{{avgScore}}</text>
+        <text class="score-unit">分</text>
+      </view>
+      <view class="score-stars-big">
+        <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+              class="big-star {{avgScore >= item ? 'on' : (avgScore >= item - 0.5 ? 'half' : '')}}">★</text>
+      </view>
+      <text class="score-count">{{commentTotal}} 条评价</text>
+    </view>
+
+    <!-- 操作 -->
+    <view class="action-row">
+      <view class="stepper">
+        <text class="step-btn" bindtap="minus">−</text>
+        <text class="step-val">{{num}}</text>
+        <text class="step-btn" bindtap="plus">+</text>
+      </view>
+      <button class="act-cart" bindtap="addCart">加入购物车</button>
+      <button class="act-buy" bindtap="openBuy">立即购买</button>
+    </view>
+  </view>
+
+  <!-- 评价区域 -->
+  <view class="card comment-section">
+    <view class="comment-head">
+      <text class="comment-title">菜品评价 ({{commentTotal}})</text>
+      <view class="comment-sort">
+        <text class="sort-opt {{sortBy === 'time' ? 'on' : ''}}" bindtap="setSort" data-sort="time">最新</text>
+        <text class="sort-opt {{sortBy === 'score-desc' ? 'on' : ''}}" bindtap="setSort" data-sort="score-desc">好评</text>
+      </view>
+    </view>
+
+    <!-- 评价列表 -->
+    <view wx:if="{{commentList.length === 0}}" class="empty-comment">
+      <text class="empty-icon">💬</text>
+      <text>暂无评价，快来第一个评价吧</text>
+    </view>
+
+    <view wx:else>
+      <view wx:for="{{commentList}}" wx:key="id" class="comment-card">
+        <view class="cmt-user">
+          <image wx:if="{{item.userAvatar}}" src="{{item.userAvatar}}" class="cmt-avatar" mode="aspectFill"/>
+          <view wx:else class="cmt-avatar cmt-avatar-place">👤</view>
+          <view class="cmt-user-info">
+            <text class="cmt-name">{{item.userName || '匿名用户'}}</text>
+            <view class="cmt-stars">
+              <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+                    class="cmt-star {{item.score >= item ? 'on' : ''}}">★</text>
+            </view>
+          </view>
+          <text class="cmt-time">{{item.time}}</text>
+        </view>
+        <view class="cmt-body">{{item.content}}</view>
+        <view class="cmt-footer" wx:if="{{item.goodsReply}}">
+          <text class="reply-tag">商家回复</text>
+          <text class="reply-text">{{item.goodsReply}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{commentTotal > commentList.length}}" class="load-more" bindtap="loadMore">
+        加载更多评价
+      </view>
+    </view>
+  </view>
+
+  <!-- 下单弹窗 -->
+  <view class="modal-mask" wx:if="{{showOrderModal}}" catchtap="closeModal">
+    <view class="modal" catchtap="noop">
+      <view class="modal-title">确认下单</view>
+      <view class="modal-body">
+        <view class="form-row">
+          <text class="form-label">配送方式</text>
+          <radio-group>
+            <label class="radio-item"><radio value="自提" checked/>自提</label>
+            <label class="radio-item"><radio value="外送"/>外送</label>
+          </radio-group>
+        </view>
+        <view class="form-row" wx:if="{{orderForm.deliverType === '外送'}}">
+          <text class="form-label">地址</text>
+          <textarea class="form-textarea" placeholder="联系人、电话、地址"
+                    value="{{orderForm.address}}" bindinput="onAddrInput"/>
+        </view>
+        <view class="order-summary">
+          <text>{{goods.name}} x {{num}}</text>
+          <text class="price">¥{{totalPrice}}</text>
+        </view>
+      </view>
+      <view class="modal-ft">
+        <button class="mbtn cancel" bindtap="closeModal">取消</button>
+        <button class="mbtn ok" bindtap="submitOrder">下单</button>
+      </view>
+    </view>
+  </view>
+</scroll-view>

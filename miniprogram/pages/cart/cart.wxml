@@ -1,0 +1,66 @@
+<view class="container">
+  <view class="card" wx:if="{{tableData.length > 0}}">
+    <view wx:for="{{tableData}}" wx:key="id" class="cart-item">
+      <checkbox checked="{{item.checked}}" bindtap="toggleCheck" data-id="{{item.id}}" data-index="{{index}}"/>
+      <image src="{{item.goodsImg}}" mode="aspectFill" class="cart-img"/>
+      <view class="cart-info">
+        <view class="line1 cart-name">{{item.goodsName}}</view>
+        <view class="price">¥<text class="price-num">{{item.goodsPrice}}</text></view>
+      </view>
+      <view class="cart-stepper">
+        <text class="stepper-btn" bindtap="changeNum" data-index="{{index}}" data-delta="-1">−</text>
+        <text class="stepper-val">{{item.num}}</text>
+        <text class="stepper-btn" bindtap="changeNum" data-index="{{index}}" data-delta="1">+</text>
+      </view>
+      <text class="cart-del" bindtap="deleteItem" data-id="{{item.id}}">删除</text>
+    </view>
+  </view>
+
+  <view wx:else class="empty-tip">
+    <text>🛒</text>
+    <view>购物车是空的</view>
+    <button class="go-buy-btn" bindtap="goGoods">去逛逛</button>
+  </view>
+
+  <!-- 底部结算栏 -->
+  <view class="cart-footer" wx:if="{{tableData.length > 0}}">
+    <checkbox checked="{{allChecked}}" bindtap="toggleAll">全选</checkbox>
+    <view class="cart-total">
+      <text>合计：</text>
+      <text class="price">¥<text class="total-price">{{total}}</text></text>
+    </view>
+    <button class="checkout-btn" bindtap="checkout" disabled="{{total === 0}}">立即下单</button>
+  </view>
+
+  <!-- 下单弹窗 -->
+  <view class="modal-mask" wx:if="{{showOrderModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-title">下单信息</view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">配送类型</text>
+          <radio-group>
+            <label class="radio-label">
+              <radio value="自提" checked="{{orderForm.deliverType === '自提'}}" bindchange="onDeliverTypeChange"/>
+              自提
+            </label>
+            <label class="radio-label">
+              <radio value="外送" checked="{{orderForm.deliverType === '外送'}}" bindchange="onDeliverTypeChange"/>
+              外送
+            </label>
+          </radio-group>
+        </view>
+        <view class="form-item" wx:if="{{orderForm.deliverType === '外送'}}">
+          <text class="form-label">收货地址</text>
+          <textarea placeholder="请输入外送接收地址，包括联系人、联系电话、地址信息"
+                    value="{{orderForm.address}}" bindinput="onAddressInput"
+                    class="form-textarea"/>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="closeModal">取消</button>
+        <button class="modal-btn confirm" bindtap="submitOrder">确认</button>
+      </view>
+    </view>
+  </view>
+</view>
