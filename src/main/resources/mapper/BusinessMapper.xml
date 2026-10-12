@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.BusinessMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.example.entity.Business">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="business_name" property="businessName" />
+        <result column="address" property="address" />
+        <result column="phone" property="phone" />
+        <result column="avatar" property="avatar" />
+        <result column="status" property="status" />
+        <result column="canteen_id" property="canteenId" />
+        <result column="floor" property="floor" />
+        <result column="operate_status" property="operateStatus" />
+        <result column="estimated_cooking_time" property="estimatedCookingTime" />
+        <result column="queue_count" property="queueCount" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 新增：selectAll动态SQL（和你项目其他Mapper完全一致） -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from business
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="businessName != null and businessName != ''">
+                and business_name like concat('%', #{businessName}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="canteenId != null">
+                and canteen_id = #{canteenId}
+            </if>
+            <if test="floor != null and floor != ''">
+                and floor = #{floor}
+            </if>
+            <if test="operateStatus != null and operateStatus != ''">
+                and operate_status = #{operateStatus}
+            </if>
+        </where>
+    </select>
+
+    <!-- 其他原有insert、update、delete语句 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into business(user_id, business_name, address, phone, avatar, status, canteen_id, floor, operate_status, estimated_cooking_time, queue_count, create_time)
+        values (#{userId}, #{businessName}, #{address}, #{phone}, #{avatar}, #{status}, #{canteenId}, #{floor}, #{operateStatus}, #{estimatedCookingTime}, #{queueCount}, now())
+    </insert>
+
+    <update id="updateById">
+        update business
+        <set>
+            <if test="businessName != null and businessName != ''">business_name = #{businessName},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="canteenId != null">canteen_id = #{canteenId},</if>
+            <if test="floor != null and floor != ''">floor = #{floor},</if>
+            <if test="operateStatus != null and operateStatus != ''">operate_status = #{operateStatus},</if>
+            <if test="estimatedCookingTime != null">estimated_cooking_time = #{estimatedCookingTime},</if>
+            <if test="queueCount != null">queue_count = #{queueCount},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from business where id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from business where id = #{id}
+    </select>
+
+</mapper>

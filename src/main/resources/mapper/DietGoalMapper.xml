@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.DietGoalMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.entity.DietGoal">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="goal_type" property="goalType" />
+        <result column="daily_calories" property="dailyCalories" />
+        <result column="daily_protein" property="dailyProtein" />
+        <result column="daily_carbs" property="dailyCarbs" />
+        <result column="daily_fat" property="dailyFat" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from diet_goal
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="goalType != null and goalType != ''">
+                and goal_type = #{goalType}
+            </if>
+        </where>
+        order by id asc
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from diet_goal where id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into diet_goal(user_id, goal_type, daily_calories, daily_protein, daily_carbs, daily_fat, create_time)
+        values (#{userId}, #{goalType}, #{dailyCalories}, #{dailyProtein}, #{dailyCarbs}, #{dailyFat}, now())
+    </insert>
+
+    <update id="updateById">
+        update diet_goal
+        <set>
+            <if test="goalType != null">goal_type = #{goalType},</if>
+            <if test="dailyCalories != null">daily_calories = #{dailyCalories},</if>
+            <if test="dailyProtein != null">daily_protein = #{dailyProtein},</if>
+            <if test="dailyCarbs != null">daily_carbs = #{dailyCarbs},</if>
+            <if test="dailyFat != null">daily_fat = #{dailyFat},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from diet_goal where id = #{id}
+    </delete>
+
+</mapper>
